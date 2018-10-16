@@ -1,4 +1,4 @@
-﻿
+
 #region Get-TargetResource
 function Get-TargetResource
 {
@@ -233,8 +233,44 @@ function Set-TargetResource
         $XmlProfile
     )
 
-    #TODO Implement
-    
+    if ($Ensure -eq 'Absent')
+    {
+        Remove-WiFiProfile -ProfileName $ProfileName
+    }
+    else
+    {
+        if ($XmlProfile)
+        {
+            Set-WiFiProfile -ProfileName $ProfileName -XmlProfile $XmlProfile
+        }
+        else
+        {
+            $paramHash = @{
+                ProfileName       = $ProfileName
+                ConnectionMode    = $ConnectionMode
+                Authentication    = $Authentication
+                Encryption        = $Encryption
+                ConnectHiddenSSID = $ConnectHiddenSSID
+            }
+
+            if ($Credential)
+            {
+                $paramHash.Password = $Credential.Password
+            }
+            
+            if ($EAPType)
+            {
+                $paramHash.EAPType = $EAPType
+                $paramHash.ServerNames = $ServerNames
+                if ($TrustedRootCA)
+                {
+                    $paramHash.TrustedRootCA = $TrustedRootCA
+                }
+            }
+
+            Set-WiFiProfile @paramHash
+        }
+    }
 }
 #endregion Set-TargetResource
 
