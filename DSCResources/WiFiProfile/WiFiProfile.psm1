@@ -1,3 +1,18 @@
+$moduleRoot = Split-Path -Path $MyInvocation.MyCommand.Path -Parent
+
+#region LocalizedData
+$Culture = 'en-us'
+if (Test-Path -Path (Join-Path -Path $moduleRoot -ChildPath $PSUICulture))
+{
+    $Culture = $PSUICulture
+}
+Import-LocalizedData `
+    -BindingVariable LocalizedData `
+    -Filename WiFiProfile.strings.psd1 `
+    -BaseDirectory $moduleRoot `
+    -UICulture $Culture
+#endregion LocalizedData
+
 
 #region Get-TargetResource
 function Get-TargetResource
@@ -29,7 +44,7 @@ function Get-TargetResource
 
     if (-not $currentProfile)
     {
-        Write-Verbose ('Profile "{0}" is not exist.' -f $ProfileName)
+        Write-Verbose -Message $($LocalizedData.ProfileNotExist -f $ProfileName)
         $returnHash.Ensure = 'Absent'
     }
     else
@@ -132,7 +147,7 @@ function Test-TargetResource
         
         if ($null -eq $xmlProfileObject)
         {
-            Write-Error 'Specified XML Profile is not valid format.'
+            Write-Error -Message $($LocalizedData.XMLProfileIsNotValid)
         }
         else
         {
@@ -151,7 +166,7 @@ function Test-TargetResource
         ('ConnectionMode', 'Authentication', 'Encryption', 'PassPhrase', 'ConnectHiddenSSID', 'EAPType').ForEach( {
                 if (-not ($currentState[$_] -ceq $($_)))
                 {
-                    Write-Verbose ('The property {0} is not match.' -f $_)
+                    Write-Verbose -Message $($LocalizedData.ProfilePropertyIsNotMatch -f $_)
                     return $false
                 }
             })
@@ -162,7 +177,7 @@ function Test-TargetResource
             ('ServerNames', 'TrustedRootCA').ForEach( {
                     if (-not ($currentState[$_] -ceq $($_)))
                     {
-                        Write-Verbose ('The property {0} is not match.' -f $_)
+                        Write-Verbose -Message $($LocalizedData.ProfilePropertyIsNotMatch -f $_)
                         return $false
                     }
                 })
