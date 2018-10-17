@@ -55,7 +55,7 @@ function Get-TargetResource
         $returnHash.Encryption = $currentProfile.Encryption
         $returnHash.ConnectHiddenSSID = $currentProfile.ConnectHiddenSSID
         $returnHash.EAPType = $currentProfile.EAPType
-        $returnHash.XmlProfile = $currentProfile.XmlProfile
+        $returnHash.XmlProfile = $currentProfile.Xml
         $returnHash.PassPhrase = $currentProfile.Password
 
         if ($null -ne $currentProfile.EAPType)
@@ -262,7 +262,7 @@ function Set-TargetResource
     {
         if ($XmlProfile)
         {
-            Set-WiFiProfile -ProfileName $ProfileName -XmlProfile $XmlProfile
+            Set-WiFiProfile -XmlProfile $XmlProfile
             Write-Verbose -Message $($LocalizedData.ProfileSaved -f $ProfileName)
         }
         else
